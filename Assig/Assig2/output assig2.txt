@@ -1,0 +1,1407 @@
+Authenticating with public key "Imported-Openssh-Key"
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │                 • MobaXterm Personal Edition v26.3 •                 │
+    │               (SSH client, X server and network tools)               │
+    │                                                                      │
+    │ ⮞ SSH session to hadoop@ec2-100-31-85-87.compute-1.amazonaws.com          │
+    │   • Direct SSH      :  ✓                                             │
+    │   • SSH compression :  ✓                                             │
+    │   • SSH-browser     :  ✓                                             │
+    │   • X11-forwarding  :  ✗  (disabled or not supported by server)      │
+    │                                                                      │
+    │ ⮞ For more info, ctrl+click on help or visit our website.            │
+    └──────────────────────────────────────────────────────────────────────┘
+
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-ami/2018.03-release-notes/
+54 package(s) needed for security, out of 80 available
+Run "sudo yum update" to apply all updates.
+
+EEEEEEEEEEEEEEEEEEEE MMMMMMMM           MMMMMMMM RRRRRRRRRRRRRRR
+E::::::::::::::::::E M:::::::M         M:::::::M R::::::::::::::R
+EE:::::EEEEEEEEE:::E M::::::::M       M::::::::M R:::::RRRRRR:::::R
+  E::::E       EEEEE M:::::::::M     M:::::::::M RR::::R      R::::R
+  E::::E             M::::::M:::M   M:::M::::::M   R:::R      R::::R
+  E:::::EEEEEEEEEE   M:::::M M:::M M:::M M:::::M   R:::RRRRRR:::::R
+  E::::::::::::::E   M:::::M  M:::M:::M  M:::::M   R:::::::::::RR
+  E:::::EEEEEEEEEE   M:::::M   M:::::M   M:::::M   R:::RRRRRR::::R
+  E::::E             M:::::M    M:::M    M:::::M   R:::R      R::::R
+  E::::E       EEEEE M:::::M     MMM     M:::::M   R:::R      R::::R
+EE:::::EEEEEEEE::::E M:::::M             M:::::M   R:::R      R::::R
+E::::::::::::::::::E M:::::M             M:::::M RR::::R      R::::R
+EEEEEEEEEEEEEEEEEEEE MMMMMMM             MMMMMMM RRRRRRR      RRRRRR
+
+[hadoop@ip-172-31-38-63 ~]$ hive
+
+Logging initialized using configuration in file:/etc/hive/conf.dist/hive-log4j2.properties Async: false
+hive> CREATE DATABASE IF NOT EXISTS demo;
+OK
+Time taken: 1.449 seconds
+hive> show databases;
+OK
+default
+demo
+Time taken: 0.425 seconds, Fetched: 2 row(s)
+hive> use demo;
+OK
+Time taken: 0.072 seconds
+hive> CREATE TABLE IF NOT EXISTS Suicides
+    > (
+    >     State STRING,
+    >     Year INT,
+    >     Type_Code STRING,
+    >     Type STRING,
+    >     Gender STRING,
+    >     Age_Group STRING,
+    >     Total INT
+    > )
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > STORED AS TEXTFILE
+    > TBLPROPERTIES ("skip.header.line.count"="1");
+OK
+Time taken: 0.624 seconds
+hive> show tables;
+OK
+suicides
+Time taken: 0.079 seconds, Fetched: 1 row(s)
+hive> desc Suicides;
+OK
+state                   string
+year                    int
+type_code               string
+type                    string
+gender                  string
+age_group               string
+total                   int
+Time taken: 0.104 seconds, Fetched: 7 row(s)
+hive> LOAD DATA INPATH '/user/your_username/suicides.csv'
+    > INTO TABLE Suicides;
+FAILED: SemanticException Line 1:17 Invalid path ''/user/your_username/suicides.csv'': No files matching path hdfs://ip-172-31-38-63.ec2.internal:8020/user/your_username/suicides.csv
+hive> LOAD DATA INPATH '/user/hadoop/suicides.csv' INTO TABLE Suicides;
+FAILED: SemanticException Line 1:17 Invalid path ''/user/hadoop/suicides.csv'': No files matching path hdfs://ip-172-31-38-63.ec2.internal:8020/user/hadoop/suicides.csv
+hive> LOAD DATA INPATH '/user/hadoop/suicides.csv' INTO TABLE Suicides;
+Loading data to table demo.suicides
+OK
+Time taken: 1.277 seconds
+hive> SELECT Type, SUM(Total) AS total_cases
+    > FROM Suicides
+    > WHERE Gender = 'Female'
+    > AND Year BETWEEN 2001 AND 2012
+    > AND Type_Code = 'Causes'
+    > GROUP BY Type
+    > ORDER BY total_cases DESC
+    > LIMIT 1;
+Query ID = hadoop_20260428132413_0d5243ad-9deb-40cb-a6ee-5dc0fe0c964e
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0002)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 7.99 s
+----------------------------------------------------------------------------------------------
+OK
+Family Problems 133181
+Time taken: 21.281 seconds, Fetched: 1 row(s)
+hive> SELECT Type, SUM(Total) AS total_cases
+    > FROM Suicides
+    > WHERE Gender = 'Female'
+    > AND Year BETWEEN 2001 AND 2012
+    > AND Type_Code = 'Causes'
+    > GROUP BY Type
+    > ORDER BY total_cases DESC
+    > LIMIT 3;
+Query ID = hadoop_20260428132645_02ca0d91-a85d-4ca2-a769-6561307dacbb
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0002)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 7.19 s
+----------------------------------------------------------------------------------------------
+OK
+Family Problems 133181
+Causes Not known        76899
+Other Causes (Please Specity)   71235
+Time taken: 8.087 seconds, Fetched: 3 row(s)
+hive> SELECT State, Type, total_cases
+    > FROM
+    > (
+    >     SELECT
+    >         State,
+    >         Type,
+    >         SUM(Total) AS total_cases,
+    >         ROW_NUMBER() OVER
+    >         (
+    >             PARTITION BY State
+    >             ORDER BY SUM(Total) DESC
+    >         ) AS rn
+    >     FROM Suicides
+    >     WHERE Gender = 'Male'
+    >     AND Year BETWEEN 2001 AND 2012
+    >     AND Type_Code = 'Causes'
+    >     GROUP BY State, Type
+    > ) t
+    > WHERE rn = 1;
+Query ID = hadoop_20260428132905_5acec58f-0997-40b5-8158-3ef19b61bbab
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0002)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 7.47 s
+----------------------------------------------------------------------------------------------
+OK
+A & N Islands   Other Causes (Please Specity)   296
+Andhra Pradesh  Other Prolonged Illness 20795
+Arunachal Pradesh       Causes Not known        556
+Assam   Causes Not known        6883
+Bihar   Other Causes (Please Specity)   1847
+Chandigarh      Family Problems 161
+Chhattisgarh    Causes Not known        13123
+D & N Haveli    Family Problems 83
+Daman & Diu     Causes Not known        97
+Delhi (Ut)      Causes Not known        3857
+Goa     Causes Not known        602
+Gujarat Causes Not known        8351
+Haryana Other Causes (Please Specity)   8127
+Himachal Pradesh        Other Causes (Please Specity)   1085
+Jammu & Kashmir Causes Not known        461
+Jharkhand       Other Causes (Please Specity)   2429
+Karnataka       Causes Not known        23833
+Kerala  Family Problems 26558
+Lakshadweep     Other Prolonged Illness 2
+Madhya Pradesh  Causes Not known        13334
+Maharashtra     Family Problems 39208
+Manipur Causes Not known        198
+Meghalaya       Causes Not known        414
+Mizoram Causes Not known        356
+Nagaland        Causes Not known        142
+Odisha  Causes Not known        8767
+Puducherry      Family Problems 1851
+Punjab  Insanity/Mental Illness 1792
+Rajasthan       Other Causes (Please Specity)   10437
+Sikkim  Causes Not known        448
+Tamil Nadu      Family Problems 29761
+Tripura Family Problems 1586
+Uttar Pradesh   Causes Not known        6364
+Uttarakhand     Causes Not known        599
+West Bengal     Causes Not known        23278
+Time taken: 8.358 seconds, Fetched: 35 row(s)
+hive> SELECT Age_Group, Gender, Type, total_cases
+    > FROM
+    > (
+    >     SELECT
+    >         Age_Group,
+    >         Gender,
+    >         Type,
+    >         SUM(Total) AS total_cases,
+    >         ROW_NUMBER() OVER
+    >         (
+    >             PARTITION BY Age_Group, Gender
+    >             ORDER BY SUM(Total) DESC
+    >         ) AS rn
+    >     FROM Suicides
+    >     WHERE Year BETWEEN 2001 AND 2012
+    >     AND Type_Code = 'Causes'
+    >     GROUP BY Age_Group, Gender, Type
+    > ) t
+    > WHERE rn = 1;
+Query ID = hadoop_20260428134049_e2c74eb8-7e60-4828-a993-8f23f2460767
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0003)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 8.53 s
+----------------------------------------------------------------------------------------------
+OK
+0-14    Female  Other Causes (Please Specity)   4082
+0-14    Male    Other Causes (Please Specity)   4953
+15-29   Female  Family Problems 60299
+15-29   Male    Family Problems 61128
+30-44   Female  Family Problems 44238
+30-44   Male    Family Problems 80897
+45-59   Female  Family Problems 19924
+45-59   Male    Family Problems 49541
+60+     Female  Other Prolonged Illness 9369
+60+     Male    Other Prolonged Illness 21713
+Time taken: 17.445 seconds, Fetched: 10 row(s)
+hive> SELECT
+    >     State,
+    >     Year,
+    >     SUM(Total) AS total_suicides
+    > FROM Suicides
+    > WHERE Year BETWEEN 2001 AND 2012
+    > GROUP BY State, Year
+    > ORDER BY State, Year;
+Query ID = hadoop_20260428134117_871e2f10-4d7c-4583-847f-d75fe6d06538
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0003)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 9.73 s
+----------------------------------------------------------------------------------------------
+OK
+A & N Islands   2001    645
+A & N Islands   2002    720
+A & N Islands   2003    565
+A & N Islands   2004    610
+A & N Islands   2005    695
+A & N Islands   2006    665
+A & N Islands   2007    775
+A & N Islands   2008    714
+A & N Islands   2009    655
+A & N Islands   2010    780
+A & N Islands   2011    680
+A & N Islands   2012    605
+Andhra Pradesh  2001    52610
+Andhra Pradesh  2002    58465
+Andhra Pradesh  2003    57045
+Andhra Pradesh  2004    67630
+Andhra Pradesh  2005    67210
+Andhra Pradesh  2006    66380
+Andhra Pradesh  2007    74410
+Andhra Pradesh  2008    71729
+Andhra Pradesh  2009    72500
+Andhra Pradesh  2010    79505
+Andhra Pradesh  2011    75385
+Andhra Pradesh  2012    71190
+Arunachal Pradesh       2001    555
+Arunachal Pradesh       2002    570
+Arunachal Pradesh       2003    405
+Arunachal Pradesh       2004    395
+Arunachal Pradesh       2005    350
+Arunachal Pradesh       2006    645
+Arunachal Pradesh       2007    644
+Arunachal Pradesh       2008    549
+Arunachal Pradesh       2009    549
+Arunachal Pradesh       2010    655
+Arunachal Pradesh       2011    670
+Arunachal Pradesh       2012    646
+Assam   2001    13230
+Assam   2002    12550
+Assam   2003    12963
+Assam   2004    14178
+Assam   2005    14209
+Assam   2006    15155
+Assam   2007    15301
+Assam   2008    14945
+Assam   2009    14830
+Assam   2010    14965
+Assam   2011    13630
+Assam   2012    16320
+Bihar   2001    3015
+Bihar   2002    3600
+Bihar   2003    2984
+Bihar   2004    1755
+Bihar   2005    2715
+Bihar   2006    3090
+Bihar   2007    4825
+Bihar   2008    5075
+Bihar   2009    5255
+Bihar   2010    6130
+Bihar   2011    3975
+Bihar   2012    3795
+Chandigarh      2001    350
+Chandigarh      2002    435
+Chandigarh      2003    515
+Chandigarh      2004    375
+Chandigarh      2005    445
+Chandigarh      2006    400
+Chandigarh      2007    408
+Chandigarh      2008    415
+Chandigarh      2009    374
+Chandigarh      2010    355
+Chandigarh      2011    525
+Chandigarh      2012    567
+Chhattisgarh    2001    20051
+Chhattisgarh    2002    19750
+Chhattisgarh    2003    19595
+Chhattisgarh    2004    22475
+Chhattisgarh    2005    24405
+Chhattisgarh    2006    23130
+Chhattisgarh    2007    24195
+Chhattisgarh    2008    24725
+Chhattisgarh    2009    29415
+Chhattisgarh    2010    32563
+Chhattisgarh    2011    33780
+Chhattisgarh    2012    28270
+D & N Haveli    2001    250
+D & N Haveli    2002    250
+D & N Haveli    2003    260
+D & N Haveli    2004    195
+D & N Haveli    2005    345
+D & N Haveli    2006    210
+D & N Haveli    2007    380
+D & N Haveli    2008    300
+D & N Haveli    2009    280
+D & N Haveli    2010    315
+D & N Haveli    2011    315
+D & N Haveli    2012    330
+Daman & Diu     2001    69
+Daman & Diu     2002    85
+Daman & Diu     2003    118
+Daman & Diu     2004    65
+Daman & Diu     2005    159
+Daman & Diu     2006    110
+Daman & Diu     2007    75
+Daman & Diu     2008    95
+Daman & Diu     2009    115
+Daman & Diu     2010    155
+Daman & Diu     2011    165
+Daman & Diu     2012    180
+Delhi (Ut)      2001    6195
+Delhi (Ut)      2002    5265
+Delhi (Ut)      2003    5765
+Delhi (Ut)      2004    6277
+Delhi (Ut)      2005    6224
+Delhi (Ut)      2006    7458
+Delhi (Ut)      2007    7405
+Delhi (Ut)      2008    6511
+Delhi (Ut)      2009    7385
+Delhi (Ut)      2010    7713
+Delhi (Ut)      2011    8580
+Delhi (Ut)      2012    9494
+Goa     2001    1280
+Goa     2002    1545
+Goa     2003    1500
+Goa     2004    1570
+Goa     2005    1410
+Goa     2006    1375
+Goa     2007    1350
+Goa     2008    1431
+Goa     2009    1382
+Goa     2010    1610
+Goa     2011    1465
+Goa     2012    1445
+Gujarat 2001    23955
+Gujarat 2002    23216
+Gujarat 2003    22830
+Gujarat 2004    23868
+Gujarat 2005    23825
+Gujarat 2006    25172
+Gujarat 2007    27900
+Gujarat 2008    30818
+Gujarat 2009    30779
+Gujarat 2010    31035
+Gujarat 2011    31910
+Gujarat 2012    35550
+Haryana 2001    10031
+Haryana 2002    11000
+Haryana 2003    11135
+Haryana 2004    10410
+Haryana 2005    10230
+Haryana 2006    11580
+Haryana 2007    12165
+Haryana 2008    13280
+Haryana 2009    12515
+Haryana 2010    14470
+Haryana 2011    16225
+Haryana 2012    14135
+Himachal Pradesh        2001    1535
+Himachal Pradesh        2002    1670
+Himachal Pradesh        2003    1926
+Himachal Pradesh        2004    1840
+Himachal Pradesh        2005    1795
+Himachal Pradesh        2006    2285
+Himachal Pradesh        2007    2010
+Himachal Pradesh        2008    3148
+Himachal Pradesh        2009    2800
+Himachal Pradesh        2010    2703
+Himachal Pradesh        2011    2214
+Himachal Pradesh        2012    2636
+Jammu & Kashmir 2001    765
+Jammu & Kashmir 2002    919
+Jammu & Kashmir 2003    690
+Jammu & Kashmir 2004    560
+Jammu & Kashmir 2005    1470
+Jammu & Kashmir 2006    1301
+Jammu & Kashmir 2007    1170
+Jammu & Kashmir 2008    1547
+Jammu & Kashmir 2009    1602
+Jammu & Kashmir 2010    1295
+Jammu & Kashmir 2011    1432
+Jammu & Kashmir 2012    2070
+Jharkhand       2001    1250
+Jharkhand       2002    1360
+Jharkhand       2003    1360
+Jharkhand       2004    2085
+Jharkhand       2005    4040
+Jharkhand       2006    4280
+Jharkhand       2007    6427
+Jharkhand       2008    4555
+Jharkhand       2009    5550
+Jharkhand       2010    6158
+Jharkhand       2011    6060
+Jharkhand       2012    6595
+Karnataka       2001    59405
+Karnataka       2002    61350
+Karnataka       2003    61805
+Karnataka       2004    59685
+Karnataka       2005    57785
+Karnataka       2006    61060
+Karnataka       2007    61520
+Karnataka       2008    61110
+Karnataka       2009    60975
+Karnataka       2010    63255
+Karnataka       2011    63110
+Karnataka       2012    63765
+Kerala  2001    47860
+Kerala  2002    49050
+Kerala  2003    47190
+Kerala  2004    45265
+Kerala  2005    46220
+Kerala  2006    45130
+Kerala  2007    44810
+Kerala  2008    42845
+Kerala  2009    43775
+Kerala  2010    42930
+Kerala  2011    41421
+Kerala  2012    42450
+Lakshadweep     2001    0
+Lakshadweep     2002    0
+Lakshadweep     2003    10
+Lakshadweep     2004    0
+Lakshadweep     2005    0
+Lakshadweep     2006    10
+Lakshadweep     2007    15
+Lakshadweep     2008    0
+Lakshadweep     2009    5
+Lakshadweep     2010    5
+Lakshadweep     2011    0
+Lakshadweep     2012    5
+Madhya Pradesh  2001    34300
+Madhya Pradesh  2002    34495
+Madhya Pradesh  2003    33810
+Madhya Pradesh  2004    33975
+Madhya Pradesh  2005    27240
+Madhya Pradesh  2006    32175
+Madhya Pradesh  2007    31645
+Madhya Pradesh  2008    38145
+Madhya Pradesh  2009    45565
+Madhya Pradesh  2010    45015
+Madhya Pradesh  2011    46295
+Madhya Pradesh  2012    48875
+Maharashtra     2001    73090
+Maharashtra     2002    72645
+Maharashtra     2003    73800
+Maharashtra     2004    73645
+Maharashtra     2005    72130
+Maharashtra     2006    77470
+Maharashtra     2007    75920
+Maharashtra     2008    71870
+Maharashtra     2009    71500
+Maharashtra     2010    79580
+Maharashtra     2011    79735
+Maharashtra     2012    80560
+Manipur 2001    205
+Manipur 2002    195
+Manipur 2003    130
+Manipur 2004    204
+Manipur 2005    134
+Manipur 2006    180
+Manipur 2007    195
+Manipur 2008    170
+Manipur 2009    134
+Manipur 2010    185
+Manipur 2011    165
+Manipur 2012    205
+Meghalaya       2001    435
+Meghalaya       2002    332
+Meghalaya       2003    205
+Meghalaya       2004    275
+Meghalaya       2005    355
+Meghalaya       2006    459
+Meghalaya       2007    435
+Meghalaya       2008    424
+Meghalaya       2009    557
+Meghalaya       2010    537
+Meghalaya       2011    761
+Meghalaya       2012    640
+Mizoram 2001    270
+Mizoram 2002    330
+Mizoram 2003    260
+Mizoram 2004    300
+Mizoram 2005    275
+Mizoram 2006    348
+Mizoram 2007    140
+Mizoram 2008    205
+Mizoram 2009    339
+Mizoram 2010    380
+Mizoram 2011    450
+Mizoram 2012    857
+Nagaland        2001    200
+Nagaland        2002    135
+Nagaland        2003    109
+Nagaland        2004    155
+Nagaland        2005    135
+Nagaland        2006    140
+Nagaland        2007    116
+Nagaland        2008    210
+Nagaland        2009    153
+Nagaland        2010    60
+Nagaland        2011    165
+Nagaland        2012    150
+Odisha  2001    20254
+Odisha  2002    21940
+Odisha  2003    22100
+Odisha  2004    21075
+Odisha  2005    21040
+Odisha  2006    20325
+Odisha  2007    21540
+Odisha  2008    24520
+Odisha  2009    21825
+Odisha  2010    21275
+Odisha  2011    26205
+Odisha  2012    25135
+Puducherry      2001    2645
+Puducherry      2002    2835
+Puducherry      2003    2910
+Puducherry      2004    2694
+Puducherry      2005    2690
+Puducherry      2006    2630
+Puducherry      2007    2585
+Puducherry      2008    2535
+Puducherry      2009    2590
+Puducherry      2010    2540
+Puducherry      2011    2785
+Puducherry      2012    2705
+Punjab  2001    3240
+Punjab  2002    2535
+Punjab  2003    3155
+Punjab  2004    3225
+Punjab  2005    2940
+Punjab  2006    3860
+Punjab  2007    4235
+Punjab  2008    4345
+Punjab  2009    4235
+Punjab  2010    4600
+Punjab  2011    4830
+Punjab  2012    5150
+Rajasthan       2001    15975
+Rajasthan       2002    16240
+Rajasthan       2003    18305
+Rajasthan       2004    18625
+Rajasthan       2005    20889
+Rajasthan       2006    21315
+Rajasthan       2007    22185
+Rajasthan       2008    25830
+Rajasthan       2009    25325
+Rajasthan       2010    24600
+Rajasthan       2011    21740
+Rajasthan       2012    24105
+Sikkim  2001    470
+Sikkim  2002    383
+Sikkim  2003    525
+Sikkim  2004    488
+Sikkim  2005    545
+Sikkim  2006    725
+Sikkim  2007    610
+Sikkim  2008    1435
+Sikkim  2009    1204
+Sikkim  2010    1400
+Sikkim  2011    916
+Sikkim  2012    905
+Tamil Nadu      2001    56450
+Tamil Nadu      2002    56134
+Tamil Nadu      2003    59360
+Tamil Nadu      2004    64195
+Tamil Nadu      2005    60380
+Tamil Nadu      2006    61905
+Tamil Nadu      2007    69055
+Tamil Nadu      2008    72125
+Tamil Nadu      2009    71832
+Tamil Nadu      2010    82805
+Tamil Nadu      2011    79815
+Tamil Nadu      2012    84635
+Total (All India)       2001    217012
+Total (All India)       2002    220834
+Total (All India)       2003    221702
+Total (All India)       2004    227394
+Total (All India)       2005    227828
+Total (All India)       2006    236224
+Total (All India)       2007    245274
+Total (All India)       2008    250034
+Total (All India)       2009    254302
+Total (All India)       2010    269198
+Total (All India)       2011    271170
+Total (All India)       2012    270890
+Total (States)  2001    212950
+Total (States)  2002    216998
+Total (States)  2003    217644
+Total (States)  2004    223306
+Total (States)  2005    223604
+Total (States)  2006    231630
+Total (States)  2007    240614
+Total (States)  2008    245804
+Total (States)  2009    249740
+Total (States)  2010    264452
+Total (States)  2011    265950
+Total (States)  2012    265334
+Total (Uts)     2001    4062
+Total (Uts)     2002    3836
+Total (Uts)     2003    4058
+Total (Uts)     2004    4088
+Total (Uts)     2005    4224
+Total (Uts)     2006    4594
+Total (Uts)     2007    4660
+Total (Uts)     2008    4230
+Total (Uts)     2009    4562
+Total (Uts)     2010    4746
+Total (Uts)     2011    5220
+Total (Uts)     2012    5556
+Tripura 2001    4270
+Tripura 2002    3891
+Tripura 2003    4220
+Tripura 2004    3850
+Tripura 2005    3575
+Tripura 2006    3825
+Tripura 2007    3525
+Tripura 2008    3760
+Tripura 2009    3689
+Tripura 2010    3625
+Tripura 2011    3515
+Tripura 2012    4220
+Uttar Pradesh   2001    17580
+Uttar Pradesh   2002    21250
+Uttar Pradesh   2003    18315
+Uttar Pradesh   2004    18185
+Uttar Pradesh   2005    17245
+Uttar Pradesh   2006    15495
+Uttar Pradesh   2007    19610
+Uttar Pradesh   2008    20440
+Uttar Pradesh   2009    20790
+Uttar Pradesh   2010    18140
+Uttar Pradesh   2011    24195
+Uttar Pradesh   2012    22107
+Uttarakhand     2001    1555
+Uttarakhand     2002    1805
+Uttarakhand     2003    1953
+Uttarakhand     2004    1185
+Uttarakhand     2005    1365
+Uttarakhand     2006    1630
+Uttarakhand     2007    1238
+Uttarakhand     2008    948
+Uttarakhand     2009    1710
+Uttarakhand     2010    1402
+Uttarakhand     2011    1585
+Uttarakhand     2012    2120
+West Bengal     2001    68450
+West Bengal     2002    65035
+West Bengal     2003    66400
+West Bengal     2004    67035
+West Bengal     2005    75075
+West Bengal     2006    78625
+West Bengal     2007    74300
+West Bengal     2008    74260
+West Bengal     2009    73240
+West Bengal     2010    80185
+West Bengal     2011    82460
+West Bengal     2012    44871
+Time taken: 10.788 seconds, Fetched: 456 row(s)
+hive> SELECT * FROM Suicides LIMIT 10;
+OK
+A & N Islands   2001    Causes  Illness (Aids/STD)      Female  0-14    0
+A & N Islands   2001    Causes  Bankruptcy or Sudden change in Economic Female  0-14    0
+A & N Islands   2001    Causes  Cancellation/Non-Settlement of Marriage Female  0-14    0
+A & N Islands   2001    Causes  Physical Abuse (Rape/Incest Etc.)       Female  0-14    0
+A & N Islands   2001    Causes  Dowry Dispute   Female  0-14    0
+A & N Islands   2001    Causes  Family Problems Female  0-14    0
+A & N Islands   2001    Causes  Ideological Causes/Hero Worshipping     Female  0-14    0
+A & N Islands   2001    Causes  Other Prolonged Illness Female  0-14    0
+A & N Islands   2001    Causes  Property Dispute        Female  0-14    0
+A & N Islands   2001    Causes  Fall in Social Reputation       Female  0-14    0
+Time taken: 0.151 seconds, Fetched: 10 row(s)
+hive> SELECT COUNT(*) FROM Suicides;
+Query ID = hadoop_20260428134224_4383b748-b80d-4df8-8e80-625b0f6cb2bb
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0003)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 7.08 s
+----------------------------------------------------------------------------------------------
+OK
+237519
+Time taken: 7.658 seconds, Fetched: 1 row(s)
+hive> SELECT COUNT(*) FROM Suicides;
+Query ID = hadoop_20260428134301_07696f61-4fad-4060-9998-5cfa2d3b6ee9
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0003)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 5.75 s
+----------------------------------------------------------------------------------------------
+OK
+237519
+Time taken: 6.409 seconds, Fetched: 1 row(s)
+hive> SELECT Type, SUM(Total) AS total_cases
+    > FROM Suicides
+    > WHERE Gender = 'Female'
+    > AND Year BETWEEN 2001 AND 2012
+    > AND Type_Code = 'Causes'
+    > GROUP BY Type
+    > ORDER BY total_cases DESC
+    > LIMIT 10;
+Query ID = hadoop_20260428135738_ebd3f1ee-3507-4f75-8f98-8c637a7f5708
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0004)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 8.13 s
+----------------------------------------------------------------------------------------------
+OK
+Family Problems 133181
+Causes Not known        76899
+Other Causes (Please Specity)   71235
+Other Prolonged Illness 69072
+Insanity/Mental Illness 33352
+Dowry Dispute   31206
+Love Affairs    21339
+Failure in Examination  12054
+Suspected/Illicit Relation      8093
+Poverty 7905
+Time taken: 16.23 seconds, Fetched: 10 row(s)
+hive> CREATE TABLE adult_managed (
+    >   age INT,
+    >   workclass STRING,
+    >   fnlwgt INT,
+    >   education STRING,
+    >   education_num INT,
+    >   marital_status STRING,
+    >   occupation STRING,
+    >   relationship STRING,
+    >   race STRING,
+    >   sex STRING,
+    >   capital_gain INT,
+    >   capital_loss INT,
+    >   hours_per_week INT,
+    >   native_country STRING,
+    >   income STRING
+    > )
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > STORED AS TEXTFILE;
+OK
+Time taken: 0.086 seconds
+hive> show tanles;
+NoViableAltException(24@[846:1: ddlStatement : ( createDatabaseStatement | switchDatabaseStatement | dropDatabaseStatement | createTableStatement | dropTableStatement | truncateTableStatement | alterStatement | descStatement | showStatement | metastoreCheck | createViewStatement | createMaterializedViewStatement | dropViewStatement | dropMaterializedViewStatement | createFunctionStatement | createMacroStatement | createIndexStatement | dropIndexStatement | dropFunctionStatement | reloadFunctionStatement | dropMacroStatement | analyzeStatement | lockStatement | unlockStatement | lockDatabase | unlockDatabase | createRoleStatement | dropRoleStatement | ( grantPrivileges )=> grantPrivileges | ( revokePrivileges )=> revokePrivileges | showGrants | showRoleGrants | showRolePrincipals | showRoles | grantRole | revokeRole | setRole | showCurrentRole | abortTransactionStatement );])
+        at org.antlr.runtime.DFA.noViableAlt(DFA.java:158)
+        at org.antlr.runtime.DFA.predict(DFA.java:144)
+        at org.apache.hadoop.hive.ql.parse.HiveParser.ddlStatement(HiveParser.java:3757)
+        at org.apache.hadoop.hive.ql.parse.HiveParser.execStatement(HiveParser.java:2382)
+        at org.apache.hadoop.hive.ql.parse.HiveParser.statement(HiveParser.java:1333)
+        at org.apache.hadoop.hive.ql.parse.ParseDriver.parse(ParseDriver.java:208)
+        at org.apache.hadoop.hive.ql.parse.ParseUtils.parse(ParseUtils.java:77)
+        at org.apache.hadoop.hive.ql.parse.ParseUtils.parse(ParseUtils.java:70)
+        at org.apache.hadoop.hive.ql.Driver.compile(Driver.java:468)
+        at org.apache.hadoop.hive.ql.Driver.compileInternal(Driver.java:1317)
+        at org.apache.hadoop.hive.ql.Driver.runInternal(Driver.java:1457)
+        at org.apache.hadoop.hive.ql.Driver.run(Driver.java:1237)
+        at org.apache.hadoop.hive.ql.Driver.run(Driver.java:1227)
+        at org.apache.hadoop.hive.cli.CliDriver.processLocalCmd(CliDriver.java:233)
+        at org.apache.hadoop.hive.cli.CliDriver.processCmd(CliDriver.java:184)
+        at org.apache.hadoop.hive.cli.CliDriver.processLine(CliDriver.java:403)
+        at org.apache.hadoop.hive.cli.CliDriver.executeDriver(CliDriver.java:821)
+        at org.apache.hadoop.hive.cli.CliDriver.run(CliDriver.java:759)
+        at org.apache.hadoop.hive.cli.CliDriver.main(CliDriver.java:686)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.apache.hadoop.util.RunJar.run(RunJar.java:239)
+        at org.apache.hadoop.util.RunJar.main(RunJar.java:153)
+FAILED: ParseException line 1:5 cannot recognize input near 'show' 'tanles' '<EOF>' in ddl statement
+hive> show tables;
+OK
+adult_managed
+suicides
+Time taken: 0.044 seconds, Fetched: 2 row(s)
+hive> LOAD DATA INPATH '/user/hive/data/adult.data'
+    >
+    >
+    >
+    > c
+    >
+    > [hadoop@ip-172-31-38-63 ~]$
+[hadoop@ip-172-31-38-63 ~]$ hive
+
+Logging initialized using configuration in file:/etc/hive/conf.dist/hive-log4j2.properties Async: false
+hive> use demo;
+OK
+Time taken: 0.534 seconds
+hive> LOAD DATA INPATH '/user/hadoop/adult_data'
+    > INTO TABLE adult_managed;
+FAILED: SemanticException Line 1:17 Invalid path ''/user/hadoop/adult_data'': No files matching path hdfs://ip-172-31-38-63.ec2.internal:8020/user/hadoop/adult_data
+hive> LOAD DATA INPATH '/user/hadoop/adult_data.txt'
+    > INTO TABLE adult_managed;
+Loading data to table demo.adult_managed
+OK
+Time taken: 2.25 seconds
+hive> CREATE EXTERNAL TABLE adult_external (
+    >   age INT,
+    >   workclass STRING,
+    >   fnlwgt INT,
+    >   education STRING,
+    >   education_num INT,
+    >   marital_status STRING,
+    >   occupation STRING,
+    >   relationship STRING,
+    >   race STRING,
+    >   sex STRING,
+    >   capital_gain INT,
+    >   capital_loss INT,
+    >   hours_per_week INT,
+    >   native_country STRING,
+    >   income STRING
+    > )
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > STORED AS TEXTFILE
+    > LOCATION '/user/hadoop/external';
+OK
+Time taken: 0.253 seconds
+hive> show tables;
+OK
+adult_external
+adult_managed
+suicides
+Time taken: 0.167 seconds, Fetched: 3 row(s)
+hive> SELECT * FROM adult_external LIMIT 5;
+OK
+39       State-gov      NULL     Bachelors      NULL     Never-married   Adm-clerical    Not-in-family   White   Male   NULL    NULL    NULL     United-States <=50K
+50       Self-emp-not-inc       NULL     Bachelors      NULL     Married-civ-spouse      Exec-managerial         Husband         White   Male   NULL    NULL NULL      United-States   <=50K
+38       Private        NULL     HS-grad        NULL     Divorced        Handlers-cleaners       Not-in-family   White   Male   NULL    NULL    NULL     United-States         <=50K
+53       Private        NULL     11th   NULL     Married-civ-spouse      Handlers-cleaners       Husband         Black   Male   NULL    NULL    NULL     United-States         <=50K
+28       Private        NULL     Bachelors      NULL     Married-civ-spouse      Prof-specialty  Wife    Black   Female NULL    NULL    NULL     Cuba    <=50K
+Time taken: 2.351 seconds, Fetched: 5 row(s)
+hive> DROP TABLE adult_managed;
+OK
+Time taken: 3.012 seconds
+hive> DROP TABLE adult_external;
+OK
+Time taken: 0.115 seconds
+hive> CREATE TABLE adult_managed (
+    >   age INT,
+    >   workclass STRING,
+    >   fnlwgt INT,
+    >   education STRING,
+    >   education_num INT,
+    >   marital_status STRING,
+    >   occupation STRING,
+    >   relationship STRING,
+    >   race STRING,
+    >   sex STRING,
+    >   capital_gain INT,
+    >   capital_loss INT,
+    >   hours_per_week INT,
+    >   native_country STRING,
+    >   income STRING
+    > )
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > STORED AS TEXTFILE;
+OK
+Time taken: 0.097 seconds
+hive> LOAD DATA INPATH '/user/hadoop/adult.data.txt'
+    > INTO TABLE adult_managed;
+FAILED: SemanticException Line 1:17 Invalid path ''/user/hadoop/adult.data.txt'': No files matching path hdfs://ip-172-31-38-63.ec2.internal:8020/user/hadoop/adult.data.txt
+hive> LOAD DATA INPATH '/user/hadoop/adult_data.txt'
+    > INTO TABLE adult_managed;
+Loading data to table demo.adult_managed
+OK
+Time taken: 0.602 seconds
+hive> SELECT AVG(age) AS average_age
+    > FROM adult_managed;
+Query ID = hadoop_20260428144340_bbf70f5c-9555-4bfb-b5e2-bbfeab263ac4
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0006)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 6.76 s
+----------------------------------------------------------------------------------------------
+OK
+38.58164675532078
+Time taken: 17.403 seconds, Fetched: 1 row(s)
+hive> LOAD DATA INPATH '/user/hadoop/adult_data.txt'
+    > INTO TABLE adult_managed;
+FAILED: SemanticException Line 1:17 Invalid path ''/user/hadoop/adult_data.txt'': No files matching path hdfs://ip-172-31-38-63.ec2.internal:8020/user/hadoop/adult_data.txt
+hive> LOAD DATA INPATH '/user/hadoop/adult_data.txt' INTO TABLE adult_managed;
+FAILED: SemanticException Line 1:17 Invalid path ''/user/hadoop/adult_data.txt'': No files matching path hdfs://ip-172-31-38-63.ec2.internal:8020/user/hadoop/adult_data.txt
+hive> LOAD DATA INPATH  '/user/hadoop/adult_data.txt' INTO TABLE adult_managed;
+FAILED: SemanticException Line 1:18 Invalid path ''/user/hadoop/adult_data.txt'': No files matching path hdfs://ip-172-31-38-63.ec2.internal:8020/user/hadoop/adult_data.txt
+hive> LOAD DATA INPATH  '/user/hadoop/adult_data.txt' INTO TABLE adult_managed;
+Loading data to table demo.adult_managed
+OK
+Time taken: 0.562 seconds
+hive> SELECT AVG(age) AS average_age
+    > FROM adult_managed;
+Query ID = hadoop_20260428145435_8844d0a5-3830-4d74-80cb-edea97259b73
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 6.70 s
+----------------------------------------------------------------------------------------------
+OK
+38.58164675532078
+Time taken: 16.337 seconds, Fetched: 1 row(s)
+hive> SELECT workclass, COUNT(*) AS total_people
+    > FROM adult_managed
+    > WHERE workclass != ' ?'
+    > GROUP BY workclass
+    > ORDER BY total_people DESC;
+Query ID = hadoop_20260428145552_05697f14-aa34-446b-adf2-fa7b65fbb076
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 6.48 s
+----------------------------------------------------------------------------------------------
+OK
+ Private        22696
+ Self-emp-not-inc       2541
+ Local-gov      2093
+ State-gov      1298
+ Self-emp-inc   1116
+ Federal-gov    960
+ Without-pay    14
+ Never-worked   7
+Time taken: 7.452 seconds, Fetched: 8 row(s)
+hive> SELECT
+    >   MIN(age) AS minimum_age,
+    >   MAX(age) AS maximum_age
+    > FROM adult_managed;
+Query ID = hadoop_20260428145621_d2869095-614f-46cb-8fd2-70305b34e541
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 5.92 s
+----------------------------------------------------------------------------------------------
+OK
+17      90
+Time taken: 6.56 seconds, Fetched: 1 row(s)
+hive> SELECT
+    >   ROUND(
+    >     SUM(CASE WHEN income = ' >50K' THEN 1 ELSE 0 END) * 100.0 / COUNT(*),
+    >     2
+    >   ) AS percentage_income_above_50k
+    > FROM adult_managed;
+Query ID = hadoop_20260428145649_e4a266e2-92c4-42b1-ab11-75ba31afc667
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 6.82 s
+----------------------------------------------------------------------------------------------
+OK
+24.08
+Time taken: 7.514 seconds, Fetched: 1 row(s)
+hive> SELECT occupation, AVG(hours_per_week) AS avg_hours
+    > FROM adult_managed
+    > WHERE occupation != ' ?'
+    > GROUP BY occupation
+    > ORDER BY avg_hours DESC
+    > LIMIT 5;
+Query ID = hadoop_20260428145713_f2f7b8b5-31f4-4d1e-899f-c8a9da68248a
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 6.91 s
+----------------------------------------------------------------------------------------------
+OK
+ Adm-clerical   NULL
+ Transport-moving       NULL
+ Craft-repair   NULL
+ Exec-managerial        NULL
+ Farming-fishing        NULL
+Time taken: 7.94 seconds, Fetched: 5 row(s)
+hive> SELECT education, COUNT(*) AS total_people
+    > FROM adult_managed
+    > GROUP BY education
+    > ORDER BY total_people DESC
+    > LIMIT 1;
+Query ID = hadoop_20260428150053_17570d14-9da8-489c-8367-13a1894090d0
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 5.95 s
+----------------------------------------------------------------------------------------------
+OK
+ HS-grad        10501
+Time taken: 6.56 seconds, Fetched: 1 row(s)
+hive> SELECT COUNT(*) AS married_bachelors_count
+    > FROM adult_managed
+    > WHERE marital_status LIKE ' Married%'
+    > AND education = ' Bachelors';
+Query ID = hadoop_20260428150121_e4517ae5-a10b-4018-bba4-0619b6b925c1
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 6.90 s
+----------------------------------------------------------------------------------------------
+OK
+2840
+Time taken: 7.592 seconds, Fetched: 1 row(s)
+hive> SELECT race, sex, AVG(age) AS average_age
+    > FROM adult_managed
+    > GROUP BY race, sex
+    > ORDER BY race, sex;
+Query ID = hadoop_20260428150133_c330b4bf-eb29-40bd-8914-107a9be966e3
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 1.01 s
+----------------------------------------------------------------------------------------------
+OK
+NULL    NULL    NULL
+ Amer-Indian-Eskimo      Female 37.11764705882353
+ Amer-Indian-Eskimo      Male   37.208333333333336
+ Asian-Pac-Islander      Female 35.089595375722546
+ Asian-Pac-Islander      Male   39.073593073593074
+ Black   Female 37.854019292604505
+ Black   Male   37.68260038240918
+ Other   Female 31.678899082568808
+ Other   Male   34.65432098765432
+ White   Female 36.811617681092336
+ White   Male   39.65249817461145
+Time taken: 1.779 seconds, Fetched: 11 row(s)
+hive> SELECT
+    >   occupation,
+    >   ROUND(
+    >     SUM(CASE WHEN income = ' >50K' THEN 1 ELSE 0 END) * 100.0 / COUNT(*),
+    >     2
+    >   ) AS high_income_percentage
+    > FROM adult_managed
+    > WHERE occupation != ' ?'
+    > GROUP BY occupation
+    > ORDER BY high_income_percentage DESC
+    > LIMIT 1;
+Query ID = hadoop_20260428150150_868fa932-3254-47b7-a2b2-a08e7028af7c
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 7.34 s
+----------------------------------------------------------------------------------------------
+OK
+ Exec-managerial        48.40
+Time taken: 8.188 seconds, Fetched: 1 row(s)
+hive> SELECT
+    >   occupation,
+    >   total_people,
+    >   RANK() OVER (ORDER BY total_people DESC) AS occupation_rank
+    > FROM (
+    >   SELECT occupation, COUNT(*) AS total_people
+    >   FROM adult_managed
+    >   WHERE occupation != ' ?'
+    >   GROUP BY occupation
+    > ) t;
+Query ID = hadoop_20260428150223_50bed5c1-07f9-4379-a5d1-6a3d44653c41
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 6.34 s
+----------------------------------------------------------------------------------------------
+OK
+ Prof-specialty 4140    1
+ Craft-repair   4099    2
+ Exec-managerial        4066    3
+ Adm-clerical   3770    4
+ Sales  3650    5
+ Other-service  3295    6
+ Machine-op-inspct      2002    7
+ Transport-moving       1597    8
+ Handlers-cleaners      1370    9
+ Farming-fishing        994     10
+ Tech-support   928     11
+ Protective-serv        649     12
+ Priv-house-serv        149     13
+ Armed-Forces   9       14
+Time taken: 7.015 seconds, Fetched: 14 row(s)
+hive> SELECT percentile(age, 0.90) AS age_90th_percentile
+    > FROM adult_managed;
+Query ID = hadoop_20260428150253_5ee51934-2609-4a39-833c-8b7268a1b19a
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 5.89 s
+----------------------------------------------------------------------------------------------
+OK
+58.0
+Time taken: 6.497 seconds, Fetched: 1 row(s)
+hive> SELECT COUNT(*) AS overworked_low_earners
+    > FROM adult_managed
+    > WHERE hours_per_week > 40
+    > AND income = ' <=50K';
+Query ID = hadoop_20260428150312_9f507f21-c86c-431a-8d25-2da9e34ddffe
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 7.94 s
+----------------------------------------------------------------------------------------------
+OK
+0
+Time taken: 10.976 seconds, Fetched: 1 row(s)
+hive> SELECT COUNT(*) AS above_average_age_count
+    > FROM adult_managed
+    > WHERE age > (
+    >   SELECT AVG(age)
+    >   FROM adult_managed
+    > );
+FAILED: SemanticException Line 0:-1 Unsupported SubQuery Expression 'age': Only SubQuery expressions that are top level conjuncts are allowed
+hive> SELECT COUNT(*) AS above_average_age_count
+    > FROM adult_managed
+    > WHERE age > (
+    >   SELECT AVG(age)
+    >   FROM adult_managed
+    > );
+FAILED: SemanticException Line 0:-1 Unsupported SubQuery Expression 'age': Only SubQuery expressions that are top level conjuncts are allowed
+hive> SELECT COUNT(*) AS above_average_age_count
+    > FROM adult_managed a
+    > JOIN (
+    >     SELECT AVG(age) AS avg_age
+    >     FROM adult_managed
+    > ) b
+    > ON a.age > b.avg_age;
+FAILED: SemanticException Cartesian products are disabled for safety reasons. If you know what you are doing, please sethive.strict.checks.cartesian.product to false and that hive.mapred.mode is not set to 'strict' to proceed. Note that if you may get errors or incorrect results if you make a mistake while using some of the unsafe features.
+hive> WITH avg_table AS (
+    >   SELECT AVG(age) AS avg_age, 1 AS join_key
+    >   FROM adult_managed
+    > ),
+    > adult_table AS (
+    >   SELECT age, 1 AS join_key
+    >   FROM adult_managed
+    > )
+    > SELECT COUNT(*) AS above_average_age_count
+    > FROM adult_table a
+    > JOIN avg_table b
+    > ON a.join_key = b.join_key
+    > WHERE a.age > b.avg_age;
+Query ID = hadoop_20260428150602_e90c8b8a-1846-4c4c-b536-30be5382ef07
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Map 3 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 4 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 04/04  [==========================>>] 100%  ELAPSED TIME: 11.30 s
+----------------------------------------------------------------------------------------------
+OK
+15053
+Time taken: 12.137 seconds, Fetched: 1 row(s)
+hive> SELECT sex, income, COUNT(*) AS total_people
+    > FROM adult_managed
+    > GROUP BY sex, income
+    > ORDER BY sex, income;
+Query ID = hadoop_20260428150638_73a7f310-4917-4535-aecc-e8ce2337641f
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 6.45 s
+----------------------------------------------------------------------------------------------
+OK
+NULL    NULL    1
+ Female  <=50K  9592
+ Female  >50K   1179
+ Male    <=50K  15128
+ Male    >50K   6662
+Time taken: 7.098 seconds, Fetched: 5 row(s)
+hive> WITH education_age AS (
+    >   SELECT education, AVG(age) AS average_age
+    >   FROM adult_managed
+    >   GROUP BY education
+    > )
+    > SELECT education, average_age
+    > FROM education_age
+    > ORDER BY average_age DESC
+    > LIMIT 3;
+Query ID = hadoop_20260428150702_75fdf10d-a1c4-4c68-acc1-11ed873ad989
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1777381560883_0007)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ...... container     SUCCEEDED      1          1        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 6.07 s
+----------------------------------------------------------------------------------------------
+OK
+ 7th-8th        48.44582043343653
+ Doctorate      47.70217917675545
+ 1st-4th        46.142857142857146
+Time taken: 6.66 seconds, Fetched: 3 row(s)
