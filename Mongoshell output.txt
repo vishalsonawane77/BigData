@@ -1,0 +1,366 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\WINDOWS\System32> mongosh "mongodb+srv://cluster0.fodeldb.mongodb.net/" --apiVersion 1 --username vishuu557_db_user
+Enter password: *****
+Current Mongosh Log ID: 69fec94c92e2e220f83682d0
+Connecting to:          mongodb+srv://<credentials>@cluster0.fodeldb.mongodb.net/?appName=mongosh+2.8.2
+Using MongoDB:          8.0.23 (API Version 1)
+Using Mongosh:          2.8.2
+mongosh 2.8.3 is available for download: https://www.mongodb.com/try/download/shell
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+Atlas atlas-10mofu-shard-0 [primary] test> use Ecommerce
+switched to db Ecommerce
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Ecommerce.find()
+
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.find()
+[
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0c'),
+    order_id: 'ORD001',
+    customer: 'Alice',
+    city: 'Mumbai',
+    category: 'Electronics',
+    product: 'Laptop',
+    quantity: 1,
+    price: 75000,
+    status: 'delivered',
+    date: '2024-01-15'
+  },
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0d'),
+    order_id: 'ORD002',
+    customer: 'Bob',
+    city: 'Delhi',
+    category: 'Clothing',
+    product: 'Jacket',
+    quantity: 3,
+    price: 4500,
+    status: 'pending',
+    date: '2024-02-20'
+  },
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0e'),
+    order_id: 'ORD003',
+    customer: 'Carol',
+    city: 'Mumbai',
+    category: 'Electronics',
+    product: 'Phone',
+    quantity: 2,
+    price: 25000,
+    status: 'delivered',
+    date: '2024-03-10'
+  },
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0f'),
+    order_id: 'ORD004',
+    customer: 'Dave',
+    city: 'Pune',
+    category: 'Books',
+    product: 'Big Data Guide',
+    quantity: 5,
+    price: 800,
+    status: 'shipped',
+    date: '2024-03-25'
+  },
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da10'),
+    order_id: 'ORD005',
+    customer: 'Eve',
+    city: 'Delhi',
+    category: 'Electronics',
+    product: 'Tablet',
+    quantity: 1,
+    price: 35000,
+    status: 'delivered',
+    date: '2024-04-05'
+  }
+]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.findOne()
+{
+  _id: ObjectId('69fec9aabb2b6d372931da0c'),
+  order_id: 'ORD001',
+  customer: 'Alice',
+  city: 'Mumbai',
+  category: 'Electronics',
+  product: 'Laptop',
+  quantity: 1,
+  price: 75000,
+  status: 'delivered',
+  date: '2024-01-15'
+}
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.find({ status: "delivered" })
+[
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0c'),
+    order_id: 'ORD001',
+    customer: 'Alice',
+    city: 'Mumbai',
+    category: 'Electronics',
+    product: 'Laptop',
+    quantity: 1,
+    price: 75000,
+    status: 'delivered',
+    date: '2024-01-15'
+  },
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0e'),
+    order_id: 'ORD003',
+    customer: 'Carol',
+    city: 'Mumbai',
+    category: 'Electronics',
+    product: 'Phone',
+    quantity: 2,
+    price: 25000,
+    status: 'delivered',
+    date: '2024-03-10'
+  },
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da10'),
+    order_id: 'ORD005',
+    customer: 'Eve',
+    city: 'Delhi',
+    category: 'Electronics',
+    product: 'Tablet',
+    quantity: 1,
+    price: 35000,
+    status: 'delivered',
+    date: '2024-04-05'
+  }
+]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.find({ order_id: "ORD002" })
+[
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0d'),
+    order_id: 'ORD002',
+    customer: 'Bob',
+    city: 'Delhi',
+    category: 'Clothing',
+    product: 'Jacket',
+    quantity: 3,
+    price: 4500,
+    status: 'pending',
+    date: '2024-02-20'
+  }
+]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.updateOne(
+|   { order_id: "ORD002" },
+|   { $set: { status: "shipped" } }
+| )
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.find({ order_id: "ORD002" })
+[
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0d'),
+    order_id: 'ORD002',
+    customer: 'Bob',
+    city: 'Delhi',
+    category: 'Clothing',
+    product: 'Jacket',
+    quantity: 3,
+    price: 4500,
+    status: 'shipped',
+    date: '2024-02-20'
+  }
+]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.insertOne({
+|   order_id: "ORD006",
+|   customer: "Rahul",
+|   city: "Mumbai",
+|   category: "Electronics",
+|   product: "Smart Watch",
+|   quantity: 2,
+|   price: 12000,
+|   status: "pending",
+|   date: "2024-05-12"
+| })
+{
+  acknowledged: true,
+  insertedId: ObjectId('69fecb1792e2e220f83682d1')
+}
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.find({ order_id: "ORD006" })
+[
+  {
+    _id: ObjectId('69fecb1792e2e220f83682d1'),
+    order_id: 'ORD006',
+    customer: 'Rahul',
+    city: 'Mumbai',
+    category: 'Electronics',
+    product: 'Smart Watch',
+    quantity: 2,
+    price: 12000,
+    status: 'pending',
+    date: '2024-05-12'
+  }
+]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.find({ order_id: "ORD004" })
+[
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0f'),
+    order_id: 'ORD004',
+    customer: 'Dave',
+    city: 'Pune',
+    category: 'Books',
+    product: 'Big Data Guide',
+    quantity: 5,
+    price: 800,
+    status: 'shipped',
+    date: '2024-03-25'
+  }
+]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.deleteOne({ order_id: "ORD004" })
+{ acknowledged: true, deletedCount: 1 }
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.find({ order_id: "ORD004" })
+
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce>
+
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce>
+
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce>
+
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce>
+
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce>
+
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce>
+
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce>
+
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce>
+
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.aggregate([
+|   {
+|     $group: {
+|       _id: "$category",
+|       totalRevenue: {
+|         $sum: { $multiply: ["$price", "$quantity"] }
+|       }
+|     }
+|   },
+|   {
+|     $sort: { totalRevenue: -1 }
+|   }
+| ])
+[
+  { _id: 'Electronics', totalRevenue: 184000 },
+  { _id: 'Clothing', totalRevenue: 13500 }
+]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.aggregate([
+|   {
+|     $group: {
+|       _id: "$city",
+|       totalOrders: { $sum: 1 },
+|       averageOrderPrice: { $avg: "$price" }
+|     }
+|   }
+| ])
+[
+  {
+    _id: 'Mumbai',
+    totalOrders: 3,
+    averageOrderPrice: 37333.333333333336
+  },
+  { _id: 'Delhi', totalOrders: 2, averageOrderPrice: 19750 }
+]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.aggregate([
+|   {
+|     $group: {
+|       _id: "$status",
+|       orderCount: { $sum: 1 }
+|     }
+|   },
+|   {
+|     $match: {
+|       orderCount: { $gt: 1 }
+|     }
+|   }
+| ])
+[ { _id: 'delivered', orderCount: 3 } ]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.aggregate([
+|   {
+|     $group: {
+|       _id: "$status",
+|       orderCount: { $sum: 1 }
+|     }
+|   },
+|   {
+|     $match: {
+|       orderCount: { $gt: 1 }
+|     }
+|   }
+| ])
+[ { _id: 'delivered', orderCount: 3 } ]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce> db.Orders.find()
+[
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0c'),
+    order_id: 'ORD001',
+    customer: 'Alice',
+    city: 'Mumbai',
+    category: 'Electronics',
+    product: 'Laptop',
+    quantity: 1,
+    price: 75000,
+    status: 'delivered',
+    date: '2024-01-15'
+  },
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0d'),
+    order_id: 'ORD002',
+    customer: 'Bob',
+    city: 'Delhi',
+    category: 'Clothing',
+    product: 'Jacket',
+    quantity: 3,
+    price: 4500,
+    status: 'shipped',
+    date: '2024-02-20'
+  },
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da0e'),
+    order_id: 'ORD003',
+    customer: 'Carol',
+    city: 'Mumbai',
+    category: 'Electronics',
+    product: 'Phone',
+    quantity: 2,
+    price: 25000,
+    status: 'delivered',
+    date: '2024-03-10'
+  },
+  {
+    _id: ObjectId('69fec9aabb2b6d372931da10'),
+    order_id: 'ORD005',
+    customer: 'Eve',
+    city: 'Delhi',
+    category: 'Electronics',
+    product: 'Tablet',
+    quantity: 1,
+    price: 35000,
+    status: 'delivered',
+    date: '2024-04-05'
+  },
+  {
+    _id: ObjectId('69fecb1792e2e220f83682d1'),
+    order_id: 'ORD006',
+    customer: 'Rahul',
+    city: 'Mumbai',
+    category: 'Electronics',
+    product: 'Smart Watch',
+    quantity: 2,
+    price: 12000,
+    status: 'pending',
+    date: '2024-05-12'
+  }
+]
+Atlas atlas-10mofu-shard-0 [primary] Ecommerce>
